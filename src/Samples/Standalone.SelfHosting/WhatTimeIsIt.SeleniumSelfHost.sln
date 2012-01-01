@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatTimeIsIt.SeleniumSelfHost", "WhatTimeIsIt.SeleniumSelfHost\WhatTimeIsIt.SeleniumSelfHost.csproj", "{1A80C248-8AE0-489F-9399-74CBC0ACBAB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatTimeIsIt.SeleniumSelfHost.IntegrationTest", "WhatTimeIsIt.SeleniumSelfHost.IntegrationTest\WhatTimeIsIt.SeleniumSelfHost.IntegrationTest.csproj", "{08003FE8-0F9C-4447-B142-C7A2DED7C2F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A40DFD5F-C030-4EC7-B4DE-8AD635B0A627}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A80C248-8AE0-489F-9399-74CBC0ACBAB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A80C248-8AE0-489F-9399-74CBC0ACBAB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A80C248-8AE0-489F-9399-74CBC0ACBAB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A80C248-8AE0-489F-9399-74CBC0ACBAB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08003FE8-0F9C-4447-B142-C7A2DED7C2F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08003FE8-0F9C-4447-B142-C7A2DED7C2F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08003FE8-0F9C-4447-B142-C7A2DED7C2F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08003FE8-0F9C-4447-B142-C7A2DED7C2F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

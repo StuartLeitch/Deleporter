@@ -1,0 +1,143 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="default">
+	<PropertyGroup>
+		<BaseDir>$(MSBuildProjectDirectory)\..</BaseDir>
+		<Configuration Condition="'$(Configuration)'==''" >Release</Configuration>
+		<BuildDir>$(BaseDir)\build</BuildDir>
+		<OutputDir>$(BuildDir)\$(Configuration)</OutputDir>
+		<PackageDir>$(BuildDir)\Packages</PackageDir>
+		<SolutionFile>$(BaseDir)\src\Deleporter.sln</SolutionFile>
+		<MSBuildExtensions>$(BaseDir)\lib\msbuild\msbuild.community.tasks.dll</MSBuildExtensions>
+	</PropertyGroup>
+    <UsingTask AssemblyFile="$(MSBuildExtensions)" TaskName="MSBuild.Community.Tasks.Zip" />
+	<UsingTask AssemblyFile="$(MSBuildExtensions)" TaskName="MSBuild.Community.Tasks.XmlUpdate" />
+	
+	<Target Name="default" DependsOnTargets="Compile; Deploy; Package" />
+	
+	<Target Name="Compile">
+		<MSBuild Projects="$(SolutionFile)" Properties="Configuration=$(Configuration)"  />
+	</Target>
+
+	<Target Name="Package" DependsOnTargets="Deploy; PackageZip; PackageNuPack" />
+
+	<Target Name="Deploy">
+		<RemoveDir Directories="$(BuildDir)" />
+		
+		<ItemGroup>
+			<MainBinaries Include="$(BaseDir)\src\Deleporter\bin\$(Configuration)\**\*.*" />
+      <ClientBinary Include="$(BaseDir)\src\Deleporter.Client\bin\$(Configuration)\Deleporter.Client.*" />
+      <Helpers Include="$(BaseDir)\src\Deleporter.Client\DeleporterHelpers\*.*" />
+    </ItemGroup>
+
+		<!-- Copy to the output directory -->
+		<Copy SourceFiles="@(MainBinaries)" DestinationFolder="$(OutputDir)\Deleporter\%(RecursiveDir)"  />
+		<Copy SourceFiles="@(ClientBinary)" DestinationFolder="$(OutputDir)\Deleporter.Client" />
+	</Target>
+
+	<Target Name="PackageZip">
+		<ItemGroup>   
+			<FilesToZip Include="$(OutputDir)\**\*.*" />
+		</ItemGroup>
+		<Zip Files="@(FilesToZip)" ZipFileName="$(BuildDir)\Deleporter.zip" WorkingDirectory="$(OutputDir)" />
+	</Target>
+
+	<Target Name="PackageNuPack" DependsOnTargets="Deploy">
+		<!-- First copy the NuSpec template files to the package dir -->
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Base.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter" />
+       
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Server.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Server" />
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\transforms\Deleporter.Server\web.config.transform" DestinationFolder="$(PackageDir)\temp\Deleporter.Server\content" />
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\transforms\Deleporter.Server\web.Release.config.transform" DestinationFolder="$(PackageDir)\temp\Deleporter.Server\content" />
+		    
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Client.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Client" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\transforms\Deleporter.Client\app.config.transform" DestinationFolder="$(PackageDir)\temp\Deleporter.Client\content" />
+   
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Client.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Client" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\transforms\Deleporter.Client\app.config.transform" DestinationFolder="$(PackageDir)\temp\Deleporter.Client\content" />
+    <Copy SourceFiles="$(BaseDir)\lib\WebDev.WebHost20.dll" DestinationFolder="$(PackageDir)\temp\Deleporter.Client\lib\Net40" />
+
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Client.SeleniumServer.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServer" />    
+    <Copy SourceFiles="$(BaseDir)\lib\selenium-server-standalone-2.15.0.jar" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServer\content\SeleniumServerJar" />
+
+
+    <!-- Copy the source files to the package dir -->
+		<Copy SourceFiles="@(MainBinaries)" DestinationFolder="$(PackageDir)\temp\Deleporter\lib\Net40\%(RecursiveDir)" />
+		<Copy SourceFiles="@(ClientBinary)" DestinationFolder="$(PackageDir)\temp\Deleporter.Client\lib\Net40" />
+		<Copy SourceFiles="@(Helpers)" DestinationFolder="$(PackageDir)\temp\Deleporter.Client\content\DeleporterHelpers" />
+	
+		<!-- Get the version number of the main FV assembly to insert into the nuspec files -->
+		<GetAssemblyIdentity AssemblyFiles="$(OutputDir)\Deleporter\Deleporter.dll">
+			<Output TaskParameter="Assemblies" ItemName="AsmInfo" />
+		</GetAssemblyIdentity>
+
+		<!-- insert the version number into the nuspec files -->
+		<XmlUpdate
+		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+			XmlFileName="$(PackageDir)\temp\Deleporter\Deleporter.Base.nuspec"
+			XPath="/package/metadata/version"
+			Value="%(AsmInfo.Version)" />
+
+		<XmlUpdate
+		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+			XmlFileName="$(PackageDir)\temp\Deleporter.Server\Deleporter.Server.nuspec"
+			XPath="/package/metadata/version"
+			Value="%(AsmInfo.Version)" />
+
+		<XmlUpdate
+		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+			XmlFileName="$(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec"
+			XPath="/package/metadata/version"
+			Value="%(AsmInfo.Version)" />
+
+    <XmlUpdate
+      Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+      XmlFileName="$(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec"
+      XPath="/package/metadata/version"
+      Value="%(AsmInfo.Version)" />
+
+
+    <XmlUpdate
+      Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+      XmlFileName="$(PackageDir)\temp\Deleporter.Client.SeleniumServer\Deleporter.Client.SeleniumServer.nuspec"
+      XPath="/package/metadata/version"
+      Value="%(AsmInfo.Version)" />
+
+    <!-- Also need to insert the version number into the dependencies section -->
+		
+		<XmlUpdate
+		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+			XmlFileName="$(PackageDir)\temp\Deleporter.Server\Deleporter.Server.nuspec"
+			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Base']/@version"
+			Value="%(AsmInfo.Version)" />
+
+		<XmlUpdate
+		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+			XmlFileName="$(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec"
+			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Base']/@version"
+			Value="%(AsmInfo.Version)" />
+
+    <XmlUpdate
+      Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
+      XmlFileName="$(PackageDir)\temp\Deleporter.Client.SeleniumServer\Deleporter.Client.SeleniumServer.nuspec"
+      XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Client']/@version"
+      Value="%(AsmInfo.Version)" />
+
+    <Exec WorkingDirectory="$(BuildDir)\Packages" 
+					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter\Deleporter.Base.nuspec" />
+		
+		<Exec WorkingDirectory="$(BuildDir)\Packages" 
+					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Server\Deleporter.Server.nuspec" />
+		
+		<Exec WorkingDirectory="$(BuildDir)\Packages" 
+					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec" />
+		
+		<Exec WorkingDirectory="$(BuildDir)\Packages"
+		    	Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec" />
+
+		<Exec WorkingDirectory="$(BuildDir)\Packages"
+		    	Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Client.SeleniumServer\Deleporter.Client.SeleniumServer.nuspec" />
+
+    <RemoveDir Directories="$(PackageDir)\temp" />
+
+  </Target>
+</Project>

@@ -1,0 +1,101 @@
+﻿using System;
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Net;
+using DeleporterCore;
+using DeleporterCore.Client;
+using DeleporterCore.Configuration;
+using DeleporterCore.SelfHosting.SeleniumServer.Configuration;
+using DeleporterCore.SelfHosting.SeleniumServer.Servers;
+using DeleporterCore.SelfHosting.Servers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Remote;
+using WhatTimeIsIt.SeleniumSelfHost.IntegrationTest.DeleporterHelpers;
+using WhatTimeIsIt.SeleniumSelfHost.Services;
+using DeleporterCore.SelfHosting;
+
+namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
+{
+    [TestClass]
+    public class SimpleTest
+    {
+        private static IWebDriver Driver { get; set; }
+
+        [AssemblyCleanup]
+        public static void AssemblyCleanup() {
+            // Cassini must be stopped after Selenium - otherwise Cassini won't release port in a timely fashion
+            Cassini.Instance.Stop();
+            SeleniumServer.Instance.Stop();
+        }
+
+        [AssemblyInitialize]
+        public static void AssemblyInit(TestContext testContext) {
+            var exePath = Path.Combine(DeleporterConfiguration.FullyQualifiedPathToWebApp, "web.config");
+
+            var map = new ExeConfigurationFileMap { ExeConfigFilename = exePath };
+            var config = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+            var test3 = (DeleporterConfigurationSection)config.GetSection("deleporter");
+
+            var config3 = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            
+            Logger.LoggingEnabled = true;
+            Cassini.Instance.Start();
+            SeleniumServer.Instance.Start();
+        }
+
+        [TestMethod]
+        public void DisplaysCurrentYear() {
+            Driver.Navigate().GoToUrl(DeleporterConfiguration.SiteBaseUrl);
+            var dateElement = Driver.FindElement(By.Id("date"));
+            var displayedDate = DateTime.Parse(dateElement.Text);
+            Assert.AreEqual(DateTime.Now.Year, displayedDate.Year);
+
+            Console.WriteLine(new WebClient().DownloadString(DeleporterConfiguration.SiteBaseUrl));
+        }
+
+        [TestMethod]
+        public void DisplaysSpecialMessageIfWebServerHasSomehowGoneBackInTime() {
+            // Inject a mock IDateProvider, setting the clock back to 1975
+            var dateToSimulate = new DateTime(1975, 1, 1);
+            Deleporter.Run(() =>
+                               {
+                                   var mockDateProvider = new Mock<IDateProvider>();
+                                   mockDateProvider.Setup(x => x.CurrentDate).Returns(dateToSimulate);
+                                   NinjectControllerFactoryUtils.TemporarilyReplaceBinding(mockDateProvider.Object);
+                               });
+
+            // Now see what it displays
+            Driver.Navigate().GoToUrl(DeleporterConfiguration.SiteBaseUrl);
+            var dateElement = Driver.FindElement(By.Id("date"));
+            var displayedDate = DateTime.Parse(dateElement.Text);
+            Assert.AreEqual(1975, displayedDate.Year);
+
+            var extraInfo = Driver.FindElement(By.Id("extraInfo")).Text;
+            Assert.IsTrue(extraInfo.Contains("The world wide web hasn't been invented yet"));
+
+            Console.WriteLine(new WebClient().DownloadString(DeleporterConfiguration.SiteBaseUrl));
+        }
+
+        [TestCleanup]
+        public void MyTestCleanup() {
+            Driver.Quit();
+
+            // Runs any tidy up tasks in both the local and remote appdomains
+            TidyupUtils.PerformTidyup();
+            Deleporter.Run(TidyupUtils.PerformTidyup);
+        }
+
+        [TestInitialize]
+        public void TestInit() {
+            // Use a new browser for each test.
+            Driver =
+            //new FirefoxDriver();
+            new RemoteWebDriver(new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterSeleniumServerConfiguration.SeleniumServerPort)),
+                    DesiredCapabilities.HtmlUnitWithJavaScript());
+        }
+    }
+}

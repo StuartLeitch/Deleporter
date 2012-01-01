@@ -1,0 +1,16 @@
+<configuration>
+  <configSections>
+     <section name="deleporter" type="DeleporterCore.Configuration.DeleporterConfigurationSection, Deleporter"/>
+  </configSections>
+    <deleporter WebHostPort="51874" RemotingPort="38473" /> 
+  <system.web>
+    <httpModules>
+        <add name="DeleporterServerModule" type="DeleporterCore.Server.DeleporterServerModule, Deleporter"/>
+    </httpModules>
+  </system.web>
+  <system.webServer>
+    <modules>
+        <add name="DeleporterServerModule" type="DeleporterCore.Server.DeleporterServerModule, Deleporter"/>
+    </modules>
+  </system.webServer>
+</configuration>

@@ -1,0 +1,6 @@
+<configuration>
+  <configSections>
+    <section name="deleporter" type="DeleporterCore.Configuration.DeleporterConfigurationSection, Deleporter"/>
+  </configSections>
+  <deleporter RelativePathToWebApp="" />
+</configuration>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <version></version>
+    <authors>Steven Sanderson,Stuart Leitch</authors>
+    <owners>Stuart Leitch</owners>
+    <licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
+    <projectUrl>http://blog.stevensanderson.com/2010/03/09/deleporter-cross-process-code-injection-for-aspnet/</projectUrl>
+    <id>Deleporter.TestClient.SeleniumServerJar</id>
+    <title>Deleporter Client SelfHosting SeleniumServer</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Deleporter is a lightweight .NET library that teleports arbitrary delegates into an ASP.NET application in some other process (e.g., hosted in IIS) and runs them there.  One use case is stubbing out dependencies when running automated browser tests.</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2011</copyright>
+    <tags>Mocking Cross_Process</tags>
+	<language>en-US</language>
+	<dependencies>
+      <dependency id="Deleporter.TestClient" version="" />
+      <dependency id="Selenium.Support" version="2.15.0" />
+    </dependencies>
+  </metadata>
+ </package>

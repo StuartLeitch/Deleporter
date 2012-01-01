@@ -1,0 +1,16 @@
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+   <configSections>
+    <section name="deleporter" xdt:Locator="Match(name)"  xdt:Transform="Remove" type="DeleporterCore.Configuration.DeleporterConfigurationSection"/>
+  </configSections>
+  <deleporter xdt:Transform="RemoveAll"/>
+  <system.web>
+    <httpModules>
+      <add name="DeleporterServerModule" xdt:Locator="Match(name)"  xdt:Transform="Remove"  type="DeleporterCore.Server.DeleporterServerModule, Deleporter"/>
+    </httpModules>
+  </system.web>
+  <system.webServer>
+    <modules>
+      <add name="DeleporterServerModule" xdt:Locator="Match(name)"  xdt:Transform="Remove" type="DeleporterCore.Server.DeleporterServerModule, Deleporter"/>
+    </modules>
+  </system.webServer>
+</configuration>
