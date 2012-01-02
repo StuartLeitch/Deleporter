@@ -11,6 +11,7 @@ using DeleporterCore.SelfHosting.Servers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Remote;
 using WhatTimeIsIt.SeleniumSelfHost.IntegrationTest.Infrastructure;
 using WhatTimeIsIt.SeleniumSelfHost.Services;
@@ -82,9 +83,10 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
         [TestInitialize]
         public void TestInit() {
             // Use a new browser for each test.
-            Driver = new RemoteWebDriver(
-                    new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterSeleniumServerConfiguration.SeleniumServerPort)),
-                    DesiredCapabilities.HtmlUnitWithJavaScript());
+            Driver = new FirefoxDriver();
+            //Driver = new RemoteWebDriver(
+            //        new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterSeleniumServerConfiguration.SeleniumServerPort)),
+            //        DesiredCapabilities.HtmlUnitWithJavaScript());
         }
     }
 }

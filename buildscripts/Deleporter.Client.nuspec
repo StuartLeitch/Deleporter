@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>Deleporter.TestClient</id>
+    <id>Deleporter.Client</id>
     <version></version>
     <authors>Steven Sanderson,Stuart Leitch</authors>
     <owners>Stuart Leitch</owners>
@@ -16,7 +16,7 @@
     <language>en-US</language>
     <tags>Mocking Cross_Process</tags>
 	<dependencies>
-      <dependency id="Deleporter.Base" version="" />
+      <dependency id="Deleporter.Core" version="" />
     </dependencies>
   </metadata>
 </package>

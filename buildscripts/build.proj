@@ -42,7 +42,7 @@
 
 	<Target Name="PackageNuPack" DependsOnTargets="Deploy">
 		<!-- First copy the NuSpec template files to the package dir -->
-		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Base.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter" />
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Core.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter" />
        
 		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Server.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Server" />
 		<Copy SourceFiles="$(MSBuildProjectDirectory)\transforms\Deleporter.Server\web.config.transform" DestinationFolder="$(PackageDir)\temp\Deleporter.Server\content" />
@@ -56,8 +56,8 @@
     <Copy SourceFiles="$(BaseDir)\lib\WebDev.WebHost20.dll" DestinationFolder="$(PackageDir)\temp\Deleporter.Client\lib\Net40" />
 
 
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Client.SeleniumServer.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServer" />    
-    <Copy SourceFiles="$(BaseDir)\lib\selenium-server-standalone-2.15.0.jar" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServer\content\SeleniumServerJar" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Client.SeleniumServerJar.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServerJar" />    
+    <Copy SourceFiles="$(BaseDir)\lib\selenium-server-standalone-2.15.0.jar" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServerJar\content\SeleniumServerJar" />
 
 
     <!-- Copy the source files to the package dir -->
@@ -73,7 +73,7 @@
 		<!-- insert the version number into the nuspec files -->
 		<XmlUpdate
 		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
-			XmlFileName="$(PackageDir)\temp\Deleporter\Deleporter.Base.nuspec"
+			XmlFileName="$(PackageDir)\temp\Deleporter\Deleporter.Core.nuspec"
 			XPath="/package/metadata/version"
 			Value="%(AsmInfo.Version)" />
 
@@ -98,7 +98,7 @@
 
     <XmlUpdate
       Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
-      XmlFileName="$(PackageDir)\temp\Deleporter.Client.SeleniumServer\Deleporter.Client.SeleniumServer.nuspec"
+      XmlFileName="$(PackageDir)\temp\Deleporter.Client.SeleniumServerJar\Deleporter.Client.SeleniumServerJar.nuspec"
       XPath="/package/metadata/version"
       Value="%(AsmInfo.Version)" />
 
@@ -107,23 +107,23 @@
 		<XmlUpdate
 		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
 			XmlFileName="$(PackageDir)\temp\Deleporter.Server\Deleporter.Server.nuspec"
-			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Base']/@version"
+			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Core']/@version"
 			Value="%(AsmInfo.Version)" />
 
 		<XmlUpdate
 		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
 			XmlFileName="$(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec"
-			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Base']/@version"
+			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Core']/@version"
 			Value="%(AsmInfo.Version)" />
 
     <XmlUpdate
       Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
-      XmlFileName="$(PackageDir)\temp\Deleporter.Client.SeleniumServer\Deleporter.Client.SeleniumServer.nuspec"
+      XmlFileName="$(PackageDir)\temp\Deleporter.Client.SeleniumServerJar\Deleporter.Client.SeleniumServerJar.nuspec"
       XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Client']/@version"
       Value="%(AsmInfo.Version)" />
 
     <Exec WorkingDirectory="$(BuildDir)\Packages" 
-					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter\Deleporter.Base.nuspec" />
+					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter\Deleporter.Core.nuspec" />
 		
 		<Exec WorkingDirectory="$(BuildDir)\Packages" 
 					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Server\Deleporter.Server.nuspec" />
@@ -135,7 +135,7 @@
 		    	Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec" />
 
 		<Exec WorkingDirectory="$(BuildDir)\Packages"
-		    	Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Client.SeleniumServer\Deleporter.Client.SeleniumServer.nuspec" />
+		    	Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Client.SeleniumServerJar\Deleporter.Client.SeleniumServerJar.nuspec" />
 
     <RemoveDir Directories="$(PackageDir)\temp" />
 

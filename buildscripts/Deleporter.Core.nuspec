@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>Deleporter.Base</id>
+    <id>Deleporter.Core</id>
     <version></version>
     <authors>Steven Sanderson,Stuart Leitch</authors>
     <owners>Stuart Leitch</owners>
     <licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
     <projectUrl>http://blog.stevensanderson.com/2010/03/09/deleporter-cross-process-code-injection-for-aspnet/</projectUrl>
-    <title>Deleporter</title>
+    <title>Deleporter Core (download Server/Client to get this) </title>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Deleporter Base Library is a lightweight .NET library that teleports arbitrary delegates into an ASP.NET application in some other process (e.g., hosted in IIS) and runs them there.  One use case is stubbing out dependencies when running automated browser tests.</description>
     <releaseNotes>Initial Release</releaseNotes>
