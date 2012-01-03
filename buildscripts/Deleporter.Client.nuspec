@@ -9,14 +9,17 @@
     <projectUrl>http://blog.stevensanderson.com/2010/03/09/deleporter-cross-process-code-injection-for-aspnet/</projectUrl>
     <title>Deleporter with Client Configuration</title>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Deleporter is a lightweight .NET library that teleports arbitrary delegates into an ASP.NET application in some other process (e.g., hosted in IIS) and runs them there.  One use case is stubbing out dependencies when running automated browser tests. This version contains app.config settings to configure the client.</description>
-	<summary>Deleporter is a lightweight .NET library that teleports arbitrary delegates into an ASP.NET application in some other process. This package contains app.config settings that configure the client.</summary>
+    <description>Deleporter - Simple Cross Process Stubbing. Facilitates stubbing out dependencies when running automated browser tests against ASP.Net. Use in conjunction with your favorite mocking/IOC frameworks. Deleporter will teleport mock objects (or any arbitrary delegates) into a remote ASP.Net application, allowing you to swapping out dependencies and reduce test fragility or test complex scenarios.  Also includes Cassini/IIS Express and Selenium Server automation to provide a fully seamless test experience.
+	Install this package in your test project and Deleporter.Server in your ASP.Net Web project (MVC or WebForms).
+	See the project homepage for more details.
+	</description>
+	<summary>Deleporter - Simple Cross Process Stubbing. Facilitates stubbing out dependencies when running automated browser tests similar to when running unit tests.  Automates Cassini/IIS Express and Selenium Server for headless background browser testing.</summary>
     <releaseNotes>Initial Release</releaseNotes>
     <copyright>Copyright 2011</copyright>
     <language>en-US</language>
-    <tags>Mocking Cross_Process</tags>
+	<tags>mocking mock stub stubbing doubles tdd unit-testing unittesting testing integrationtesting tdd bdd  mstest nunit xunit ioc ninject moq selenium watin automation firefox ie chrome</tags>
 	<dependencies>
-      <dependency id="Deleporter.Core" version="" />
+      <dependency id="Deleporter" version="" />
     </dependencies>
   </metadata>
 </package>

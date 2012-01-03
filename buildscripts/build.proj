@@ -42,7 +42,7 @@
 
 	<Target Name="PackageNuPack" DependsOnTargets="Deploy">
 		<!-- First copy the NuSpec template files to the package dir -->
-		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Core.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter" />
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter" />
        
 		<Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Server.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Server" />
 		<Copy SourceFiles="$(MSBuildProjectDirectory)\transforms\Deleporter.Server\web.config.transform" DestinationFolder="$(PackageDir)\temp\Deleporter.Server\content" />
@@ -73,7 +73,7 @@
 		<!-- insert the version number into the nuspec files -->
 		<XmlUpdate
 		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
-			XmlFileName="$(PackageDir)\temp\Deleporter\Deleporter.Core.nuspec"
+			XmlFileName="$(PackageDir)\temp\Deleporter\Deleporter.nuspec"
 			XPath="/package/metadata/version"
 			Value="%(AsmInfo.Version)" />
 
@@ -107,13 +107,13 @@
 		<XmlUpdate
 		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
 			XmlFileName="$(PackageDir)\temp\Deleporter.Server\Deleporter.Server.nuspec"
-			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Core']/@version"
+			XPath="/package/metadata/dependencies/dependency[@id='Deleporter']/@version"
 			Value="%(AsmInfo.Version)" />
 
 		<XmlUpdate
 		  Namespace="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd"
 			XmlFileName="$(PackageDir)\temp\Deleporter.Client\Deleporter.Client.nuspec"
-			XPath="/package/metadata/dependencies/dependency[@id='Deleporter.Core']/@version"
+			XPath="/package/metadata/dependencies/dependency[@id='Deleporter']/@version"
 			Value="%(AsmInfo.Version)" />
 
     <XmlUpdate
@@ -123,7 +123,7 @@
       Value="%(AsmInfo.Version)" />
 
     <Exec WorkingDirectory="$(BuildDir)\Packages" 
-					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter\Deleporter.Core.nuspec" />
+					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter\Deleporter.nuspec" />
 		
 		<Exec WorkingDirectory="$(BuildDir)\Packages" 
 					Command="$(BaseDir)\lib\nuget\nuget.exe pack $(PackageDir)\temp\Deleporter.Server\Deleporter.Server.nuspec" />
