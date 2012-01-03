@@ -21,7 +21,7 @@ namespace DeleporterCore
         /// <param name="searchHeight"> How far above the starting folder should we look </param>
         /// <returns> Full path of directory. Null if not found. </returns>
         public static string FindDirectoryContainingFile(string searchPattern, string startDirectory, int searchDepth, int searchHeight = 0) {
-            Logger.Log("Looking for {0} in {1}", searchPattern, startDirectory);
+            LoggerServer.Log("Looking for {0} in {1}", searchPattern, startDirectory);
 
             string match = null;
             var dir = startDirectory;
@@ -34,8 +34,8 @@ namespace DeleporterCore
 
                 dir = parent;
             }
-            Logger.Log("Found {0} in {1}", searchPattern, match);
-            Logger.Log("");
+            LoggerServer.Log("Found {0} in {1}", searchPattern, match);
+            LoggerServer.Log("");
             return match;
         }
 
@@ -108,7 +108,7 @@ namespace DeleporterCore
             try {
                 return method.Invoke();
             } catch (UnauthorizedAccessException unauthorizedAccessException) {
-                Logger.Log("Hit a directory permission error {0}", unauthorizedAccessException.Message);
+                LoggerServer.Log("Hit a directory permission error {0}", unauthorizedAccessException.Message);
                 return (T)Activator.CreateInstance(typeof(T));
             }
         }
@@ -119,7 +119,7 @@ namespace DeleporterCore
 
             if (!Directory.Exists(rootDirectoryToLookIn)) return null;
 
-            Logger.Log("Searching {0}", rootDirectoryToLookIn);
+            LoggerServer.Log("Searching {0}", rootDirectoryToLookIn);
 
             if (EatPermissionErrors(() => Directory.EnumerateFiles(rootDirectoryToLookIn, searchPattern).Any())) return rootDirectoryToLookIn;
 

@@ -55,8 +55,8 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyProvider.cs" />
-    <Compile Include="FileUtilities.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="FileUtilities.cs" />
     <Compile Include="Configuration\DeleporterConfigurationSection.cs" />
     <Compile Include="FuncExecutionResult.cs" />
     <Compile Include="Configuration\DeleporterConfiguration.cs" />

@@ -20,12 +20,15 @@ namespace DeleporterCore.Client
 
         public static void Run(Action codeToExecute)
         {
+            LoggerClient.Log("Deleporting Action");
             var result = Current.ExecuteAction(new SerializableDelegate<Action>(codeToExecute));
             CopyFields(result.Delegate.Target, codeToExecute.Target);
         }
 
         public static T Run<T>(Func<T> codeToExecute)
         {
+            LoggerClient.Log("Deleporting Func");
+
             var genericType = typeof(SerializableDelegate<>).MakeGenericType(typeof(Func<T>));
             var serializableDelegate = Activator.CreateInstance(genericType, codeToExecute);
             var result = Current.ExecuteFunction((SerializableDelegate<Func<T>>)serializableDelegate);
@@ -73,8 +76,13 @@ namespace DeleporterCore.Client
             }
             catch (SocketException socketException)
             {
-                throw new Exception("Deleporter client was unable to connect to the remoting port on the server.  Likely causes: 1) RemotingPort or WebHostPort settings are not the same in both projects; 2) WebServer may not have been able to listen on the remoting port because something else is using the port. Try using another port.", socketException);
+                LoggerClient.Log("Failed to create a channel on port {0}", DeleporterConfiguration.RemotingPort);
+
+                throw new Exception(string.Format("Deleporter client was unable to connect to the remoting port {0} to the server.  Likely causes: 1) RemotingPort or WebHostPort settings are not the same in both projects; 2) WebServer may not have been able to listen on the remoting port because something else is using the port. Try using another port.", DeleporterConfiguration.RemotingPort), socketException);
             }
+
+            LoggerClient.Log("Created remoting channel on port {0}", DeleporterConfiguration.RemotingPort);
+
             return instance;
         }
     }

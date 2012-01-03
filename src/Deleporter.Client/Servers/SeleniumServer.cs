@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using DeleporterCore.SelfHosting.SeleniumServer.Configuration;
+using DeleporterCore.Configuration;
 using DeleporterCore.SelfHosting.Servers;
 
 namespace DeleporterCore.SelfHosting.SeleniumServer.Servers
@@ -20,16 +20,15 @@ namespace DeleporterCore.SelfHosting.SeleniumServer.Servers
             if (this._started) return false;
             this._started = true;
 
-            if (!DeleporterUtilities.LocalPortIsAvailable(DeleporterSeleniumServerConfiguration.SeleniumServerPort)) {
-                Logger.Log("Selenium port {0} is being used. Attempt to start Selenium has been aborted. " 
+            if (!DeleporterUtilities.LocalPortIsAvailable(DeleporterConfiguration.SeleniumServerPort)) {
+                LoggerClient.Log("Selenium port {0} is being used. Attempt to start Selenium has been aborted. " 
                                         + "A previous instance may be running in which case we will just use that.",
-                                        DeleporterSeleniumServerConfiguration.SeleniumServerPort);
+                                        DeleporterConfiguration.SeleniumServerPort);
                 return false;
             }
 
             var javaExecutable = FileUtilities.TryToFindProgramFile("java.exe", "java");
-            var seleniumServerJar = DeleporterSeleniumServerConfiguration.SeleniumServerJar;
-            this.ThrowIfFilesDontExist(seleniumServerJar, javaExecutable);
+            this.ThrowIfFilesDontExist(DeleporterConfiguration.SeleniumServerJar, javaExecutable);
 
             this._seleniumServer = new Process
             {
@@ -38,36 +37,37 @@ namespace DeleporterCore.SelfHosting.SeleniumServer.Servers
                                     FileName = javaExecutable,
                                     Arguments =
                                             string.Format("-jar {0} -port {1}",
-                                                          seleniumServerJar,
-                                                          DeleporterSeleniumServerConfiguration.SeleniumServerPort),
+                                                          DeleporterConfiguration.SeleniumServerJar,
+                                                          DeleporterConfiguration.SeleniumServerPort),
                                     UseShellExecute = false,
                                     CreateNoWindow = true
                             }
             };
 
-            Logger.Log("Selenium Instance starting ... ");
+            LoggerClient.Log("Selenium Instance starting on port {0} using jar {1}... ", 
+                DeleporterConfiguration.SeleniumServerPort, DeleporterConfiguration.SeleniumServerJar);
             try {
                 this._seleniumServer.Start();
             } catch (Exception ex) {
-                Logger.Log("Couldn't start Selenium ... {0}", ex.Message);
+                LoggerClient.Log("Couldn't start Selenium ... {0}", ex.Message);
                 return false;
             }
 
             // 20 seconds max ... checking every 0.1 seconds
-            DeleporterUtilities.WaitForLocalPortToBecomeUnavailable(DeleporterSeleniumServerConfiguration.SeleniumServerPort,
+            DeleporterUtilities.WaitForLocalPortToBecomeUnavailable(DeleporterConfiguration.SeleniumServerPort,
                                                                     100,
                                                                     200);
-            Logger.Log("Selenium Started");
+            LoggerClient.Log("Selenium Started");
             return true;
         }
 
         public void Stop()
         {
             if (this._seleniumServer != null) {
-                Logger.Log("Selenium Instance stopping ... ");
+                LoggerClient.Log("Selenium Instance stopping ... ");
                 this._seleniumServer.Kill();
-                DeleporterUtilities.WaitForLocalPortToBecomeAvailable(DeleporterSeleniumServerConfiguration.SeleniumServerPort);
-                Logger.Log("Selenium Stopped");
+                DeleporterUtilities.WaitForLocalPortToBecomeAvailable(DeleporterConfiguration.SeleniumServerPort);
+                LoggerClient.Log("Selenium Stopped");
             }
         }
 

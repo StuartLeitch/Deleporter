@@ -30,11 +30,35 @@ namespace DeleporterCore.Configuration
             set { this["WebHostPort"] = value; }
         }
 
+        [ConfigurationProperty("LoggingEnabled", DefaultValue = DeleporterConfiguration.DefaultLoggingEnabled)]
+        public bool LoggingEnabled
+        {
+            get {
+                var trueValues = new[] { "YES", "TRUE", "1", "ENABLED" };
+                return trueValues.Any(x => x == this["LoggingEnabled"].ToString().ToUpper());
+            }
+            set { this["LoggingEnabled"] = value; }
+        }
+
         [ConfigurationProperty("RelativePathToWebApp", DefaultValue = DeleporterConfiguration.DefaultRelativePathToWebApp)]
         public string RelativePathToWebApp
         {
             get { return this["RelativePathToWebApp"].ToString(); }
             set { this["RelativePathToWebApp"] = value; }
+        }
+
+        [ConfigurationProperty("SeleniumServerPort", DefaultValue = DeleporterConfiguration.DefaultSeleniumServerPort)]
+        public int SeleniumServerPort
+        {
+            get { return (int)this["SeleniumServerPort"]; }
+            set { this["SeleniumServerPort"] = value; }
+        }
+
+        [ConfigurationProperty("SeleniumServerJar")]
+        public string SeleniumServerJar
+        {
+            get { return this["SeleniumServerJar"].ToString(); }
+            set { this["SeleniumServerJar"] = value; }
         }
 
     }

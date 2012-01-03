@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -18,9 +19,11 @@ namespace DeleporterCore.SelfHosting.Servers
             if (_started) return false;
             _started = true;
 
+            DeleporterUtilities.SetWebAndRemotingPortsBasedOnAvailability();
+
             if (!DeleporterUtilities.LocalPortIsAvailable(DeleporterConfiguration.WebHostPort))
             {
-                Logger.Log("IIS Express port {0} is being used. Attempt to start IIS Express has been aborted",
+                LoggerClient.Log("ERROR: IIS Express port {0} is being used. Attempt to start IIS Express has been aborted",
                                         DeleporterConfiguration.WebHostPort);
                 return false;
             }
@@ -42,30 +45,46 @@ namespace DeleporterCore.SelfHosting.Servers
                             }
             };
 
-            Logger.Log("IIS Express Starting ... ");
+            LoggerClient.Log("IIS Express starting on port {0} using path {1}... ", DeleporterConfiguration.WebHostPort, DeleporterConfiguration.FullyQualifiedPathToWebApp);
             try {
                 _iisExpressProcess.Start();
             } catch (SocketException ex) {
-                Logger.Log("Couldn't start IIS Express ...  {0}", ex.Message);
+                LoggerClient.Log("Couldn't start IIS Express ...  {0}", ex.Message);
                 return false;
             }
 
             DeleporterUtilities.WaitForLocalPortToBecomeUnavailable(DeleporterConfiguration.WebHostPort);
             DeleporterUtilities.PrimeServerHomepage();
-            Logger.Log("IIS Express Started");
+            LoggerClient.Log("IIS Express Started");
             return true;
         }
 
         public void Stop() {
             if (_iisExpressProcess == null) {
-                Logger.Log("IIS Express was not started by this process ... ");
+                LoggerClient.Log("IIS Express was not started by this process ... ");
                 return;
             }
 
-            Logger.Log("IIS Express Stopping ... ");
+            LoggerClient.Log("IIS Express Stopping ... ");
             _iisExpressProcess.Kill();
-            DeleporterUtilities.WaitForLocalPortToBecomeAvailable(DeleporterConfiguration.WebHostPort);
-            Logger.Log("IIS Express Stopped");
+
+            try
+            {
+                DeleporterUtilities.WaitForLocalPortToBecomeAvailable(DeleporterConfiguration.WebHostPort);
+                LoggerClient.Log("IIS Express Stopped");
+            }
+            catch (Exception exception)
+            {
+                var message = string.Format("IIS Express did not appear to release port {0} within 10 seconds.  " + 
+                            "Please make sure that Selenium Server is shut down first.", DeleporterConfiguration.WebHostPort);
+                LoggerClient.Log(message);
+                throw new Exception(message, exception);
+            }
+            finally
+            {
+                LoggerClient.Dispose();
+            }
+
         }
     }
 }

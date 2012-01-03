@@ -4,8 +4,6 @@ using System.Net;
 using DeleporterCore;
 using DeleporterCore.Client;
 using DeleporterCore.Configuration;
-using DeleporterCore.SelfHosting;
-using DeleporterCore.SelfHosting.SeleniumServer.Configuration;
 using DeleporterCore.SelfHosting.SeleniumServer.Servers;
 using DeleporterCore.SelfHosting.Servers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,7 +30,7 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
 
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext testContext) {
-            Logger.LoggingEnabled = true;
+            LoggerClient.LoggingEnabled = true;
             Cassini.Instance.Start();
             SeleniumServer.Instance.Start();
         }
@@ -83,10 +81,10 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
         [TestInitialize]
         public void TestInit() {
             // Use a new browser for each test.
-            Driver = new FirefoxDriver();
-            //Driver = new RemoteWebDriver(
-            //        new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterSeleniumServerConfiguration.SeleniumServerPort)),
-            //        DesiredCapabilities.HtmlUnitWithJavaScript());
+           // Driver = new FirefoxDriver();
+            Driver = new RemoteWebDriver(
+                    new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterConfiguration.SeleniumServerPort)),
+                    DesiredCapabilities.HtmlUnitWithJavaScript());
         }
     }
 }

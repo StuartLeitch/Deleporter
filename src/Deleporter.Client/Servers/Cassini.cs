@@ -16,53 +16,57 @@ namespace DeleporterCore.SelfHosting.Servers
             if (_started) return false;
             _started = true;
 
+            DeleporterUtilities.SetWebAndRemotingPortsBasedOnAvailability();
+
             if (!DeleporterUtilities.LocalPortIsAvailable(DeleporterConfiguration.WebHostPort)) {
-                Logger.Log("Cassini port {0} is being used. Attempt to start Cassini has been aborted",
+                LoggerClient.Log("ERROR: Cassini port {0} is being used. Attempt to start Cassini has been aborted",
                                         DeleporterConfiguration.WebHostPort);
                 throw new InvalidOperationException(string.Format("Cassini port {0} is being used by something else. Attempt to start Cassini has been aborted",
                                         DeleporterConfiguration.WebHostPort));
             }
 
-            Logger.Log("Using web.config location {0} with port {1}",
+            LoggerClient.Log("Using web.config location {0} with port {1}",
                                     DeleporterConfiguration.FullyQualifiedPathToWebApp, DeleporterConfiguration.WebHostPort);
 
             _casinniServer = new Microsoft.VisualStudio.WebHost.Server(DeleporterConfiguration.WebHostPort, "/",
                                                                        DeleporterConfiguration.FullyQualifiedPathToWebApp);
 
-            Logger.Log("Cassini starting ... ");
+            LoggerClient.Log("Cassini starting on port {0} using path {1}... ", DeleporterConfiguration.WebHostPort, DeleporterConfiguration.FullyQualifiedPathToWebApp);
             try {
                 _casinniServer.Start();
             } catch (Exception ex) {
-                Logger.Log("Couldn't start Cassini ... {0}", ex.Message);
+                LoggerClient.Log("Couldn't start Cassini ... {0}", ex.Message);
                 return false;
             }
 
             DeleporterUtilities.WaitForLocalPortToBecomeUnavailable(DeleporterConfiguration.WebHostPort);
-            Logger.Log("Cassini Started");
+            LoggerClient.Log("Cassini Started");
             DeleporterUtilities.PrimeServerHomepage();
             return true;
         }
 
         public void Stop() {
             if (_casinniServer == null) {
-                Logger.Log("Cassini was not started by this process ... ");
+                LoggerClient.Log("Cassini was not started by this process ... ");
                 return;
             }
 
-            Logger.Log("Cassini stopping ... ");
+            LoggerClient.Log("Cassini stopping ... ");
            
             _casinniServer.Stop();
             _casinniServer.InitializeLifetimeService();
             try {
                 DeleporterUtilities.WaitForLocalPortToBecomeAvailable(DeleporterConfiguration.WebHostPort);
-                Logger.Log("Cassini Stopped");
+                LoggerClient.Log("Cassini Stopped");
             }
             catch (Exception exception)
             {
-                Logger.Log("FAILURE: Cassini did not appear to release port {0} within 10 seconds.  Please make sure that Selenium Server is shut down first."
+                LoggerClient.Log("FAILURE: Cassini did not appear to release port {0} within 10 seconds.  Please make sure that Selenium Server is shut down first."
                     , DeleporterConfiguration.WebHostPort);
                 throw new Exception(string.Format("Cassini did not appear to release port {0} within 10 seconds.  Please make sure that Selenium Server is shut down first."
                     , DeleporterConfiguration.WebHostPort), exception);
+            } finally {
+                LoggerClient.Dispose();
             }
         }
     }

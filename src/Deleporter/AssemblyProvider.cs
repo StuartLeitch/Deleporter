@@ -12,18 +12,14 @@ namespace DeleporterCore
             {
                 // If the assembly is already loaded, use that
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                // TODO Stuart: Cleanup
-                //Logger.Log("Assemblies Found");
-                //foreach (var assembly in assemblies.OrderBy(x => x.FullName)) {
-                //    Logger.Log(assembly.FullName);
-                //}
+
                 var matchingAssembly = assemblies.FirstOrDefault(x => x.FullName == assemblyName);
                 // Otherwise, look on disk
                 if (matchingAssembly == null)
                     matchingAssembly = AppDomain.CurrentDomain.Load(assemblyName);
                 // Now return the assembly bytes
                 if (matchingAssembly != null && matchingAssembly.Location != null) {
-                    Logger.Log("Assembly found by AssemblyProvider {0}", matchingAssembly.FullName);
+                    LoggerServer.Log("Assembly found by AssemblyProvider {0}", matchingAssembly.FullName);
                     return File.ReadAllBytes(matchingAssembly.Location);
                 }
             }

@@ -17,11 +17,12 @@ namespace DeleporterCore.Server
         private static int _isInitialRequest;
         private IChannel _remotingChannel;
 
-        public void Init(HttpApplication app) {
+        public void Init(HttpApplication app)
+        {
             // Handle initialization on first request so we can conditionally activate based on the port number.
             Interlocked.Exchange(ref _isInitialRequest, 1);
             app.PostMapRequestHandler += this.Context_BeginRequest;
-            Logger.LoggingEnabled = true;
+            LoggerServer.LoggingEnabled = true;
         }
 
         public void Context_BeginRequest(object sender, EventArgs e)
@@ -37,6 +38,7 @@ namespace DeleporterCore.Server
                                                                    DeleporterConfiguration.ServiceName,
                                                                    WellKnownObjectMode.Singleton);
                 this._remotingChannel = DeleporterConfiguration.CreateChannel();
+                LoggerServer.Log("Registering remoting channel on port {0}", DeleporterConfiguration.RemotingPort);
                 ChannelServices.RegisterChannel(this._remotingChannel, false);
             }
             else
@@ -69,11 +71,12 @@ namespace DeleporterCore.Server
             return exists;
         }
 
-
         private static bool CurrentPortMatchesDeleporterSetting(HttpApplication httpApplication)
         {
             // Only spin up the remoting channel if we are running on the same port as the settings
             var iisPort = int.Parse(httpApplication.Request.ServerVariables["SERVER_PORT"]);
+            LoggerServer.Log("{0} - web.config WebHostPort: {1} running port: {2}", 
+                DeleporterConfiguration.WebHostPort == iisPort ? "Match" : "MisMatch", DeleporterConfiguration.WebHostPort, iisPort);
             return DeleporterConfiguration.WebHostPort == iisPort;
         }
 
@@ -84,19 +87,21 @@ namespace DeleporterCore.Server
             var assembliesToCheck =
                     GetInheritanceChain(value.GetType()).Select(x => x.Assembly).TakeWhile(
                             x => x != typeof(HttpApplication).Assembly).Distinct().ToList();
-            foreach (var assembly in assembliesToCheck) {
-                Logger.Log("Assembly being checked for Debug Mode: " + assembly.Location);
+
+            var wasCompiledInDebugMode = assembliesToCheck.Any(AssemblyWasCompiledInDebugMode);
+
+            if (!wasCompiledInDebugMode) {
+                LoggerServer.Log("No assemblies found to be in Debug Mode - List of Assemblies:");
+                assembliesToCheck.ForEach(x => LoggerServer.Log(x.Location));
             }
 
-            // TODO Stuart: Changed to Any - what are the deeper implications?
-            return assembliesToCheck.Any(AssemblyWasCompiledInDebugMode);
+            return wasCompiledInDebugMode;
         }
 
         private static bool AssemblyWasCompiledInDebugMode(Assembly assembly)
         {
             var debuggableAttrib = assembly.GetCustomAttributes(false).OfType<DebuggableAttribute>().SingleOrDefault();
             var assemblyWasCompiledInDebugMode = debuggableAttrib != null && debuggableAttrib.IsJITTrackingEnabled;
-            Logger.Log(assemblyWasCompiledInDebugMode + "Compiled in Debug mode: " + assembly.Location);
             return assemblyWasCompiledInDebugMode;
         }
 
@@ -114,8 +119,11 @@ namespace DeleporterCore.Server
         {
             if (this._remotingChannel != null)
             {
+                LoggerServer.Log("Disposing of Remoting Channel");
                 ChannelServices.UnregisterChannel(this._remotingChannel);
             }
+
+            LoggerServer.Dispose();
         }
     }
 }

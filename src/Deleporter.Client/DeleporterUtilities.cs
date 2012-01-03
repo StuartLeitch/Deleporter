@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,12 +6,27 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using DeleporterCore.Configuration;
-using DeleporterCore.SelfHosting;
 
 namespace DeleporterCore
 {
     public static class DeleporterUtilities
     {
+        public static int FindNextAvailablePort(int startingPort) {
+            var portToTry = startingPort;
+            var available = false;
+
+            while (!available) {
+                available = LocalPortIsAvailable(portToTry);
+
+                if (available) continue;
+
+                LoggerClient.Log("Port {0} was unavailable.  Trying {1}", portToTry, portToTry + 1);
+                portToTry++;
+            }
+
+            return portToTry;
+        }
+
         public static bool LocalPortIsAvailable(int port) {
             var localhost = Dns.GetHostAddresses("localhost")[0];
 
@@ -25,7 +38,6 @@ namespace DeleporterCore
                     sock.Disconnect(false);
                     sock.Dispose();
                     return false;
-                    
                 }
 
                 throw new Exception("Not connected to port ... but no Exception was thrown?");
@@ -36,12 +48,11 @@ namespace DeleporterCore
             }
         }
 
-
         /// <summary>
         ///   Requests the home page via WebClient.
         /// </summary>
         public static void PrimeServerHomepage() {
-            Logger.Log("Priming Server Homepage...");
+            LoggerClient.Log("Priming Server Homepage...");
             using (var wc = new WebClient()) {
                 try {
                     wc.DownloadString(DeleporterConfiguration.SiteBaseUrl);
@@ -49,13 +60,35 @@ namespace DeleporterCore
                     var responseStream = webException.Response.GetResponseStream();
                     var streamReader = new StreamReader(responseStream);
 
-                    Logger.Log("Failed to prime the server. {0}", webException.Message);
+                    LoggerClient.Log("Failed to prime the server. {0}", webException.Message);
 
                     var message = string.Format("Failed to prime the server. {0} {1}", webException.Message, streamReader.ReadToEnd());
                     throw new Exception(message);
                 }
             }
-            Logger.Log("Finished Priming Server Homepage");
+            LoggerClient.Log("Finished Priming Server Homepage");
+        }
+
+        public static void RecycleServerAppDomain() {
+            var currentAssemblyCodeBase = Assembly.GetExecutingAssembly().CodeBase;
+            var currentAssemblyDirectory = Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(currentAssemblyCodeBase).Path));
+
+            var testServerRootDirectory =
+                    Path.GetFullPath(Path.Combine(currentAssemblyDirectory, DeleporterConfiguration.RelativePathToWebApp));
+            var webConfigFileName = Path.Combine(testServerRootDirectory, "Web.config");
+
+            File.SetLastWriteTime(webConfigFileName, DateTime.Now);
+        }
+
+        /// <summary>
+        ///   Depending on the test runner, it is possible that tests may be aborted without proper cleanup. Ports may be left unavailable for a while. Work around this by getting fresh ports if needed.
+        /// </summary>
+        public static void SetWebAndRemotingPortsBasedOnAvailability() {
+            var webHostPort = FindNextAvailablePort(DeleporterConfiguration.WebHostPort);
+            var remotingPort = FindNextAvailablePort(DeleporterConfiguration.RemotingPort);
+
+            if (webHostPort != DeleporterConfiguration.WebHostPort || remotingPort != DeleporterConfiguration.RemotingPort) 
+                DeleporterConfiguration.UpdatePortsInWebConfig(webHostPort, remotingPort);
         }
 
         public static void WaitForLocalPortToBecomeAvailable(int port, int sleepTimeInMilliseconds = 100, int timesToCheck = 100) {
@@ -81,18 +114,5 @@ namespace DeleporterCore
                     string.Format("Tried waiting for local port {0} to become unavailable for {1} seconds, but it's still available", port,
                                   (sleepTimeInMilliseconds * timesToCheck / 1000.0)));
         }
-
-
-        public static void RecycleServerAppDomain()
-        {
-            var currentAssemblyCodeBase = Assembly.GetExecutingAssembly().CodeBase;
-            var currentAssemblyDirectory = Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(currentAssemblyCodeBase).Path));
-
-            string testServerRootDirectory = Path.GetFullPath(Path.Combine(currentAssemblyDirectory, DeleporterConfiguration.RelativePathToWebApp));
-            string webConfigFileName = Path.Combine(testServerRootDirectory, "Web.config");
-
-            File.SetLastWriteTime(webConfigFileName, DateTime.Now);
-        }
-
     }
 }
