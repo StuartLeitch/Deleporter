@@ -37,9 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Deleporter, Version=0.1.1.32894, Culture=neutral, PublicKeyToken=4265bbe4b3365141, processorArchitecture=MSIL">
+    <Reference Include="Deleporter, Version=0.1.1.37886, Culture=neutral, PublicKeyToken=4265bbe4b3365141, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Deleporter.Base.0.1.1.32894\lib\Net40\Deleporter.dll</HintPath>
+      <HintPath>..\packages\Deleporter.0.1.1.37886\lib\Net40\Deleporter.dll</HintPath>
     </Reference>
     <Reference Include="Ninject, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Full\Ninject.dll</HintPath>

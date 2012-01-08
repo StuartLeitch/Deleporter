@@ -3,10 +3,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using DeleporterCore;
 using DeleporterCore.Client;
 using DeleporterCore.Configuration;
-using DeleporterCore.SelfHosting.SeleniumServer.Configuration;
 using DeleporterCore.SelfHosting.SeleniumServer.Servers;
 using DeleporterCore.SelfHosting.Servers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,7 +14,6 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Remote;
 using WhatTimeIsIt.SeleniumSelfHost.IntegrationTest.DeleporterHelpers;
 using WhatTimeIsIt.SeleniumSelfHost.Services;
-using DeleporterCore.SelfHosting;
 
 namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
 {
@@ -34,15 +31,6 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
 
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext testContext) {
-            var exePath = Path.Combine(DeleporterConfiguration.FullyQualifiedPathToWebApp, "web.config");
-
-            var map = new ExeConfigurationFileMap { ExeConfigFilename = exePath };
-            var config = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
-            var test3 = (DeleporterConfigurationSection)config.GetSection("deleporter");
-
-            var config3 = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            
-            Logger.LoggingEnabled = true;
             Cassini.Instance.Start();
             SeleniumServer.Instance.Start();
         }
@@ -94,7 +82,7 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
             // Use a new browser for each test.
             Driver =
             //new FirefoxDriver();
-            new RemoteWebDriver(new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterSeleniumServerConfiguration.SeleniumServerPort)),
+            new RemoteWebDriver(new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterConfiguration.SeleniumServerPort)),
                     DesiredCapabilities.HtmlUnitWithJavaScript());
         }
     }

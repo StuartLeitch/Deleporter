@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using DeleporterCore.SelfHosting.SeleniumServer.Configuration;
+using DeleporterCore.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 
@@ -35,7 +35,7 @@ namespace $rootnamespace$.DeleporterHelpers
                        (() =>
                         new RemoteWebDriver(
                                 new Uri(string.Format("http://127.0.0.1:{0}/wd/hub",
-                                                      DeleporterSelfHostSeleniumServerConfiguration.SeleniumServerPort)),
+                                                      DeleporterConfiguration.SeleniumServerPort)),
                                 DesiredCapabilities.HtmlUnitWithJavaScript()));
             }
             set { _driverGenerationMethod = value; }
