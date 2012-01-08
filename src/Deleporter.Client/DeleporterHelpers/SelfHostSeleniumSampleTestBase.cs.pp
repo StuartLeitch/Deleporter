@@ -25,7 +25,6 @@ namespace $rootnamespace$.DeleporterHelpers
 
         //[AssemblyInitialize]
         //public static void AssemblyInit(TestContext testContext) {
-        //    Logger.LoggingEnabled = true;
         //    Cassini.Instance.Start();
         //    SeleniumServer.Instance.Start();
 
@@ -36,7 +35,7 @@ namespace $rootnamespace$.DeleporterHelpers
         //}
 
         [TestCleanup]
-        public void MyTestCleanup() {
+        public void TestCleanup() {
             Driver.Quit();
 
             // Runs any tidy up tasks in both the local and remote appdomains
