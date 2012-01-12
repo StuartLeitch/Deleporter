@@ -60,8 +60,6 @@ namespace DeleporterCore.Configuration
         public static int WebHostPort { get; private set; }
 
         public static IChannel CreateChannel() {
-
-            // TODO Stuart: Getting intermittent SocketExceptions here -
             // Only one usage of each socket address (protocol/network address/port) is normally permitted
             var registeredChannels = ChannelServices.RegisteredChannels;
 
