@@ -17,6 +17,12 @@ namespace DeleporterCore.Configuration
             set { this["Host"] = value; }
         }
 
+        [ConfigurationProperty("Disabled", DefaultValue = DeleporterConfiguration.DefaultDisabled)]
+        public bool Disabled {
+            get { return (bool)this["Disabled"]; }
+            set { this["Disabled"] = value; }
+        }
+
         [ConfigurationProperty("ServiceName", DefaultValue = DeleporterConfiguration.DefaultServiceName)]
         public string ServiceName {
             get { return (string)this["ServiceName"]; }

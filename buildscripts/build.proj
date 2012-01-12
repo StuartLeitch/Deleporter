@@ -57,7 +57,7 @@
 
 
     <Copy SourceFiles="$(MSBuildProjectDirectory)\Deleporter.Client.SeleniumServerJar.nuspec" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServerJar" />    
-    <Copy SourceFiles="$(BaseDir)\lib\selenium-server-standalone-2.15.0.jar" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServerJar\content\SeleniumServerJar" />
+    <Copy SourceFiles="$(BaseDir)\lib\selenium-server-standalone-2.16.1.jar" DestinationFolder="$(PackageDir)\temp\Deleporter.Client.SeleniumServerJar\content\SeleniumServerJar" />
 
 
     <!-- Copy the source files to the package dir -->

@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Serialization.Formatters;
@@ -18,6 +20,7 @@ namespace DeleporterCore.Configuration
         internal const int DefaultSeleniumServerPort = 4444;
         internal const string DefaultServiceName = "Deleporter.rm";
         internal const int DefaultWebHostPort = 0;
+        public const bool DefaultDisabled = false;
         private static string _fullyQualifiedPathToWebApp;
 
         private static string _seleniumServerJar;
@@ -45,6 +48,7 @@ namespace DeleporterCore.Configuration
         public static string Host { get; private set; }
         public static string HostAddress { get { return String.Format("tcp://{0}:{1}/{2}", Host, RemotingPort, ServiceName); } }
         public static bool LoggingEnabled { get; private set; }
+        public static bool Disabled { get; private set; }
         public static string RelativePathToWebApp { get; private set; }
         public static int RemotingPort { get; private set; }
         public static string SeleniumServerJar { get {
@@ -56,6 +60,11 @@ namespace DeleporterCore.Configuration
         public static int WebHostPort { get; private set; }
 
         public static IChannel CreateChannel() {
+
+            // TODO Stuart: Getting intermittent SocketExceptions here -
+            // Only one usage of each socket address (protocol/network address/port) is normally permitted
+            var registeredChannels = ChannelServices.RegisteredChannels;
+
             IDictionary props = new Hashtable { { "port", RemotingPort }, { "typeFilterLevel", TypeFilterLevel.Full } };
 
             return new TcpChannel(props, null, new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
@@ -93,6 +102,7 @@ namespace DeleporterCore.Configuration
             if (config != null) {
                 RemotingPort = config.RemotingPort;
                 Host = config.Host;
+                Disabled = config.Disabled;
                 ServiceName = config.ServiceName;
                 WebHostPort = config.WebHostPort;
                 LoggingEnabled = config.LoggingEnabled;
@@ -102,6 +112,7 @@ namespace DeleporterCore.Configuration
             } else {
                 RemotingPort = DefaultRemotingPort;
                 Host = DefaultHost;
+                Disabled = DefaultDisabled;
                 ServiceName = DefaultServiceName;
                 WebHostPort = DefaultWebHostPort;
                 LoggingEnabled = DefaultLoggingEnabled;

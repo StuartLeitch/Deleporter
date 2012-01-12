@@ -19,10 +19,15 @@ namespace DeleporterCore.Server
 
         public void Init(HttpApplication app)
         {
+            LoggerServer.LoggingEnabled = DeleporterConfiguration.LoggingEnabled;
+
+            if (DeleporterConfiguration.Disabled) {
+                LoggerServer.Log("Deleporter is disabled in config settings");
+                return;
+            }
             // Handle initialization on first request so we can conditionally activate based on the port number.
             Interlocked.Exchange(ref _isInitialRequest, 1);
             app.PostMapRequestHandler += this.Context_BeginRequest;
-            LoggerServer.LoggingEnabled = true;
         }
 
         public void Context_BeginRequest(object sender, EventArgs e)

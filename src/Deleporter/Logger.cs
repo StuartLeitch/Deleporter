@@ -49,21 +49,24 @@ namespace DeleporterCore
     {
         protected bool _loggingEnabled;
         private readonly string _logFileName;
-        private StreamWriter _logWriter;
+        private StreamWriter _streamWriter;
+        private TextWriter _threadSafeWriter;
 
         protected LoggerBase(string logFileName) {
             this._logFileName = logFileName;
         }
 
-        private StreamWriter LogWriter {
+        private TextWriter LogWriter {
             get {
                 try {
-                    if (this._logWriter != null)
-                        return this._logWriter;
-                    this._logWriter = new StreamWriter(Path.Combine(Path.GetTempPath(), this._logFileName), false);
-                    this._logWriter.WriteLine("Starting log session {0} in {1}", DateTime.Now, this._logFileName);
-                    this._logWriter.Flush();
-                    return this._logWriter;
+                    if (this._threadSafeWriter != null)
+                        return this._threadSafeWriter;
+                    this._streamWriter = new StreamWriter(Path.Combine(Path.GetTempPath(), this._logFileName), false);
+                    this._threadSafeWriter = TextWriter.Synchronized(this._streamWriter);
+                    this._threadSafeWriter.WriteLine("Starting log session {0} in {1} for assembly {2}", DateTime.Now, this._logFileName,
+                                                     VersionHelper.AssemblyVersion);
+                    this._threadSafeWriter.Flush();
+                    return this._threadSafeWriter;
                 } catch (Exception exception) {
                     Debug.WriteLine(exception);
                 }
@@ -73,9 +76,15 @@ namespace DeleporterCore
         }
 
         protected void DisposeLogger() {
-            this.LogMessage("Disposing of {0}", this._logFileName);
+            this.LogMessage("Disposing of logger for {0}", this._logFileName);
             this._loggingEnabled = false;
-            this._logWriter.Dispose();
+
+            if (this._threadSafeWriter != null) {
+                this._threadSafeWriter.Dispose();
+            }
+            if (this._streamWriter != null) {
+                this._streamWriter.Dispose();
+            }
         }
 
         protected void LogMessage(string message, params object[] args) {
@@ -83,7 +92,6 @@ namespace DeleporterCore
                 return;
 
             Debug.WriteLine(message, args);
-
             try {
                 this.LogWriter.WriteLine(String.Format("{0:D2}:{1:D3}", DateTime.Now.Second, DateTime.Now.Millisecond) + " " + message, args);
                 this.LogWriter.Flush();

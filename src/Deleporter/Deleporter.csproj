@@ -64,6 +64,7 @@
     <Compile Include="Client\Deleporter.cs" />
     <Compile Include="Server\DeleporterServerModule.cs" />
     <Compile Include="Server\DeleporterService.cs" />
+    <Compile Include="VersionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Deleporter.snk">

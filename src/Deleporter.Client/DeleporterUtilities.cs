@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
@@ -27,6 +28,22 @@ namespace DeleporterCore
             return portToTry;
         }
 
+        public static int FindNextAvailableRemotingPort(int startingPort) {
+            var portToTry = startingPort;
+            var available = false;
+
+            while (!available) {
+                available = LocalRemotingPortIsAvailable(portToTry);
+
+                if (available) continue;
+
+                LoggerClient.Log("Remoting Port {0} was unavailable.  Trying {1}", portToTry, portToTry + 1);
+                portToTry++;
+            }
+
+            return portToTry;
+        }
+
         public static bool LocalPortIsAvailable(int port) {
             var localhost = Dns.GetHostAddresses("localhost")[0];
 
@@ -46,6 +63,12 @@ namespace DeleporterCore
                     return true;
                 throw ex;
             }
+        }
+
+        public static bool LocalRemotingPortIsAvailable(int port) {
+            IPGlobalProperties globalProperties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] activeListeners = globalProperties.GetActiveTcpListeners();
+            return activeListeners.All(conn => conn.Port != port);
         }
 
         /// <summary>
@@ -85,7 +108,7 @@ namespace DeleporterCore
         /// </summary>
         public static void SetWebAndRemotingPortsBasedOnAvailability() {
             var webHostPort = FindNextAvailablePort(DeleporterConfiguration.WebHostPort);
-            var remotingPort = FindNextAvailablePort(DeleporterConfiguration.RemotingPort);
+            var remotingPort = FindNextAvailableRemotingPort(DeleporterConfiguration.RemotingPort);
 
             if (webHostPort != DeleporterConfiguration.WebHostPort || remotingPort != DeleporterConfiguration.RemotingPort) 
                 DeleporterConfiguration.UpdatePortsInWebConfig(webHostPort, remotingPort);

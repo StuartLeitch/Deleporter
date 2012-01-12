@@ -20,6 +20,8 @@ namespace DeleporterCore.SelfHosting.SeleniumServer.Servers
             if (this._started) return false;
             this._started = true;
 
+            LoggerClient.LoggingEnabled = DeleporterConfiguration.LoggingEnabled;
+
             if (!DeleporterUtilities.LocalPortIsAvailable(DeleporterConfiguration.SeleniumServerPort)) {
                 LoggerClient.Log("Selenium port {0} is being used. Attempt to start Selenium has been aborted. " 
                                         + "A previous instance may be running in which case we will just use that.",

@@ -19,6 +19,8 @@ namespace DeleporterCore.SelfHosting.Servers
             if (_started) return false;
             _started = true;
 
+            LoggerClient.LoggingEnabled = DeleporterConfiguration.LoggingEnabled;
+
             DeleporterUtilities.SetWebAndRemotingPortsBasedOnAvailability();
 
             if (!DeleporterUtilities.LocalPortIsAvailable(DeleporterConfiguration.WebHostPort))

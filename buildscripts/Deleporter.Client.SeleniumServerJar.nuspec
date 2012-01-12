@@ -17,7 +17,7 @@
 	<language>en-US</language>
 	<dependencies>
       <dependency id="Deleporter.Client" version="" />
-      <dependency id="Selenium.Support" version="2.15.0" />
+      <dependency id="Selenium.Support" version="2.16.0" />
     </dependencies>
   </metadata>
  </package>
