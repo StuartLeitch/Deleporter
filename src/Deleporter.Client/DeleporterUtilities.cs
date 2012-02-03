@@ -45,7 +45,7 @@ namespace DeleporterCore
         }
 
         public static bool LocalPortIsAvailable(int port) {
-            var localhost = Dns.GetHostAddresses("localhost")[0];
+            var localhost = Dns.GetHostAddresses("localhost").First(x => x.AddressFamily == AddressFamily.InterNetwork);
 
             try {
                 var sock = new Socket(localhost.AddressFamily, SocketType.Stream, ProtocolType.Tcp);

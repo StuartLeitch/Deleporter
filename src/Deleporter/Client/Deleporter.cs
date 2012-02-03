@@ -73,12 +73,17 @@ namespace DeleporterCore.Client
             var instance = new DeleporterService();
             try {
                 instance.RegisterAssemblyProvider(new AssemblyProvider());
-            }
-            catch (SocketException socketException)
-            {
+            } catch (SocketException socketException) {
                 LoggerClient.Log("Failed to create a channel on port {0}", DeleporterConfiguration.RemotingPort);
 
-                throw new Exception(string.Format("Deleporter client was unable to connect to the remoting port {0} to the server.  Likely causes: 1) RemotingPort or WebHostPort settings are not the same in both projects; 2) WebServer may not have been able to listen on the remoting port because something else is using the port. Try using another port.", DeleporterConfiguration.RemotingPort), socketException);
+                throw new Exception(
+                        string.Format(
+                                "Deleporter client was unable to connect to the remoting port {0} to the server.  Likely causes: 1) RemotingPort or WebHostPort settings are not the same in both projects; 2) WebServer may not have been able to listen on the remoting port because something else is using the port. Try using another port.",
+                                DeleporterConfiguration.RemotingPort), socketException);
+            } catch (RemotingException remotingException) {
+                throw new Exception(
+        string.Format(
+                "Deleporter failed to connect. Check that the deleporter assembly is the same version in both test and web project."), remotingException);
             }
 
             LoggerClient.Log("Created remoting channel on port {0}", DeleporterConfiguration.RemotingPort);

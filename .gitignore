@@ -42,3 +42,9 @@ desktop.ini
 *.csproj.user
 *.pdb
 *.local.xml
+Local.testsettings
+*_bundle_*
+*/.idea/*
+*.idea*
+*.ncrunchproject
+*.ncrunchsolution
