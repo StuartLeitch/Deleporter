@@ -19,7 +19,7 @@ namespace DeleporterCore.Configuration
         internal const int DefaultRemotingPort = 38473;
         internal const int DefaultSeleniumServerPort = 4444;
         internal const string DefaultServiceName = "Deleporter.rm";
-        internal const int DefaultWebHostPort = 0;
+        internal const int DefaultWebHostPort = 51874;
         public const bool DefaultDisabled = false;
         private static string _fullyQualifiedPathToWebApp;
 
