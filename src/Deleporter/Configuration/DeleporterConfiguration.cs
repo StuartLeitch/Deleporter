@@ -14,7 +14,7 @@ namespace DeleporterCore.Configuration
     public static class DeleporterConfiguration
     {
         internal const string DefaultHost = "localhost";
-        internal const bool DefaultLoggingEnabled = false;
+        internal const bool DefaultLoggingEnabled = true;
         internal const string DefaultRelativePathToWebApp = null;
         internal const int DefaultRemotingPort = 38473;
         internal const int DefaultSeleniumServerPort = 4444;
