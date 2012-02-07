@@ -7,10 +7,10 @@
     <licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
     <projectUrl>http://blog.stevensanderson.com/2010/03/09/deleporter-cross-process-code-injection-for-aspnet/</projectUrl>
     <id>Deleporter.Client.SeleniumServerJar</id>
-    <title>Deleporter Client SelfHosting SeleniumServer</title>
+    <title>Deleporter Client SeleniumServer.jar</title>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-	<summary>Adds the current SeleniumServer.jar (27MB) to the project (requires Java to run). Augments Deleporter.Client.</summary>
-    <description>Adds the current SeleniumServer.jar (27MB) to the project (requires Java to run). Pulls in Selenium.Support. Useful for headless browser testing where you don't want to be bothered with setting up Selenium Server. Note, if you already have a SeleniumServer.jar on your system, you can use the configuration available in Deleporter.Client to set the location to this and you will not need this package. See Deleporter.Client for more info.</description>
+	<summary>Adds the current SeleniumServer.jar (27MB) to the project (requires Java to run - http://java.com). Augments Deleporter.Client.</summary>
+    <description>Adds the current SeleniumServer.jar (27MB) to the project (requires Java to run - http://java.com). Pulls in Selenium.Support. Useful for headless browser testing where you don't want to be bothered with setting up Selenium Server. Note, if you already have a SeleniumServer.jar on your system, you can use the configuration available in Deleporter.Client to set the location to this and you will not need this package. See Deleporter.Client for more info. Source code available at https://github.com/StuartLeitch/Deleporter.</description>
     <releaseNotes>Initial Release</releaseNotes>
     <copyright>Copyright 2011</copyright>
     <tags>mocking mock stub stubbing doubles tdd unit-testing unittesting testing integrationtesting tdd bdd  mstest nunit xunit ioc ninject moq selenium watin automation firefox ie chrome</tags>

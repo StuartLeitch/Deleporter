@@ -12,7 +12,7 @@
     <summary>Deleporter - Simple Cross Process Stubbing. Facilitates stubbing out dependencies when running automated browser tests similar to when running unit tests. </summary>
     <description>Deleporter - Simple Cross Process Stubbing. Facilitates stubbing out dependencies when running automated browser tests against ASP.Net. Use in conjunction with your favorite mocking/IOC frameworks. Deleporter will teleport mock objects (or any arbitrary delegates) into a remote ASP.Net application, allowing you to swapping out dependencies and reduce test fragility or test complex scenarios.  Also includes Cassini/IIS Express and Selenium Server automation to provide a fully seamless test experience.
 	Install this package in your ASP.Net Web Application and Deleporter.Client in your test project.
-	See the project homepage for more details.
+	See the project homepage for more details.  Source code available at https://github.com/StuartLeitch/Deleporter.
 	</description>
     <releaseNotes>Initial Release</releaseNotes>
     <copyright>Copyright 2011</copyright>

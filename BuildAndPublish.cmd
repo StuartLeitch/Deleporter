@@ -6,6 +6,4 @@ lib\CleanProject.exe /D:src /Q
 
 DeployLocal.bat
 
-REM powershell.exe -noprofile buildscripts\publish-nuget-packages.ps1
-
 pause
