@@ -11,16 +11,22 @@ namespace DeleporterCore.Configuration
             set { this["RemotingPort"] = value; }
         }
 
-        [ConfigurationProperty("Host", DefaultValue = DeleporterConfiguration.DefaultHost)]
-        public string Host {
-            get { return (string)this["Host"]; }
-            set { this["Host"] = value; }
+        [ConfigurationProperty("RemotingHost", DefaultValue = DeleporterConfiguration.DefaultRemotingHost)]
+        public string RemotingHost {
+            get { return (string)this["RemotingHost"]; }
+            set { this["RemotingHost"] = value; }
         }
 
         [ConfigurationProperty("Disabled", DefaultValue = DeleporterConfiguration.DefaultDisabled)]
         public bool Disabled {
             get { return (bool)this["Disabled"]; }
             set { this["Disabled"] = value; }
+        }
+
+        [ConfigurationProperty("BypassSelfHosting", DefaultValue = DeleporterConfiguration.DefaultBypassSelfHosting)]
+        public bool BypassSelfHosting {
+            get { return (bool)this["BypassSelfHosting"]; }
+            set { this["BypassSelfHosting"] = value; }
         }
 
         [ConfigurationProperty("ServiceName", DefaultValue = DeleporterConfiguration.DefaultServiceName)]

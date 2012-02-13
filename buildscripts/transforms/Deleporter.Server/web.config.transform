@@ -2,7 +2,7 @@
   <configSections>
      <section name="deleporter" type="DeleporterCore.Configuration.DeleporterConfigurationSection, Deleporter"/>
   </configSections>
-    <deleporter WebHostPort="51874" RemotingPort="38473" /> 
+     <!--<deleporter WebHostPort="51874" RemotingPort="38473" />--> 
   <system.web>
     <httpModules>
         <add name="DeleporterServerModule" type="DeleporterCore.Server.DeleporterServerModule, Deleporter"/>

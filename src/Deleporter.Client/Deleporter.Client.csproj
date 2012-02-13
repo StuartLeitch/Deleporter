@@ -70,12 +70,12 @@
       <Link>Deleporter.snk</Link>
     </None>
     <None Include="DeleporterHelpers\DriverFactory.cs.pp" />
-    <None Include="DeleporterHelpers\NinjectControllerFactoryUtils.cs.pp" />
-    <None Include="DeleporterHelpers\ReadMe.text" />
-    <None Include="DeleporterHelpers\SelfHostExample.cs.pp" />
-    <None Include="DeleporterHelpers\SelfHostSampleTestBase.cs.pp" />
-    <None Include="DeleporterHelpers\SelfHostSeleniumExample.cs.pp" />
-    <None Include="DeleporterHelpers\SelfHostSeleniumSampleTestBase.cs.pp" />
+    <None Include="Samples\NinjectControllerFactoryUtils.cs.pp" />
+    <None Include="Samples\ReadMe.text" />
+    <None Include="Samples\SelfHostExample.cs.pp" />
+    <None Include="Samples\SelfHostSampleTestBase.cs.pp" />
+    <None Include="Samples\SelfHostSeleniumExample.cs.pp" />
+    <None Include="Samples\SelfHostSeleniumSampleTestBase.cs.pp" />
     <None Include="DeleporterHelpers\TidyupUtils.cs.pp" />
   </ItemGroup>
   <ItemGroup>

@@ -19,25 +19,46 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
     [TestClass]
     public class SimpleTest
     {
-        private static IWebDriver Driver { get; set; }
+        private static IWebDriver Driver { get { return DriverFactory.Driver; } }
 
         [AssemblyCleanup]
         public static void AssemblyCleanup() {
-            // Cassini must be stopped after Selenium - otherwise Cassini won't release port in a timely fashion
-            SeleniumServer.Instance.Stop();
-            Cassini.Instance.Stop();
+            DriverFactory.DisposeDriver();
+
+            if (!DeleporterConfiguration.BypassSelfHosting) {
+                // Cassini must be stopped after Selenium - otherwise Cassini won't release port in a timely fashion
+                SeleniumServer.Instance.Stop();
+                Cassini.Instance.Stop();
+            }
         }
 
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext testContext) {
+            BypassSelfHostingRunFirefoxSingleDriver();
+            
             LoggerClient.LoggingEnabled = true;
-            Cassini.Instance.Start();
-            SeleniumServer.Instance.Start();
+
+            if (!DeleporterConfiguration.BypassSelfHosting) {
+                Cassini.Instance.Start();
+                SeleniumServer.Instance.Start();
+            }
+            {
+                DeleporterUtilities.IterateRemotingPortIfNeeded();
+                DeleporterUtilities.RecycleServerAppDomain();
+                DeleporterUtilities.PrimeServerHomepage();
+            };
         }
+
+        private static void BypassSelfHostingRunFirefoxSingleDriver()
+        {
+            DeleporterConfiguration.SetBypassSelfHosting();
+            DriverFactory.DriverGenerationMethod = () => new FirefoxDriver();
+            DriverFactory.KeepDriverForAllTests = true;
+        }
+
 
         [TestMethod]
         public void DisplaysCurrentYear() {
-            
             Driver.Navigate().GoToUrl(DeleporterConfiguration.SiteBaseUrl);
             var dateElement = Driver.FindElement(By.Id("date"));
             var displayedDate = DateTime.Parse(dateElement.Text);
@@ -71,8 +92,6 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
 
         [TestCleanup]
         public void MyTestCleanup() {
-            Driver.Quit();
-
             // Runs any tidy up tasks in both the local and remote appdomains
             TidyupUtils.PerformTidyup();
             Deleporter.Run(TidyupUtils.PerformTidyup);
@@ -80,11 +99,7 @@ namespace WhatTimeIsIt.SeleniumSelfHost.IntegrationTest
 
         [TestInitialize]
         public void TestInit() {
-            // Use a new browser for each test.
-           // Driver = new FirefoxDriver();
-            Driver = new RemoteWebDriver(
-                    new Uri(string.Format("http://127.0.0.1:{0}/wd/hub", DeleporterConfiguration.SeleniumServerPort)),
-                    DesiredCapabilities.HtmlUnitWithJavaScript());
+            DriverFactory.GetNewDriverForTestIfNewDriverSet();
         }
     }
 }

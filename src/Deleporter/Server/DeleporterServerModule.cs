@@ -32,9 +32,11 @@ namespace DeleporterCore.Server
 
         public void Context_BeginRequest(object sender, EventArgs e)
         {
+            // Only run this logic once per app initialization.
+            // Reason we're running this logic here is so we can identify the IIS port the app is running on
             if (Interlocked.Exchange(ref _isInitialRequest, 0) != 1) return;
 
-            if (!CurrentPortMatchesDeleporterSetting((HttpApplication)sender) || RemotingChannelExists()) return;
+            if ((!CurrentWebPortMatchesDeleporterSetting((HttpApplication)sender) && !DeleporterConfiguration.BypassSelfHosting) || RemotingChannelExists()) return;
 
             if (WasCompiledInDebugMode(sender))
             {
@@ -76,9 +78,8 @@ namespace DeleporterCore.Server
             return exists;
         }
 
-        private static bool CurrentPortMatchesDeleporterSetting(HttpApplication httpApplication)
+        private static bool CurrentWebPortMatchesDeleporterSetting(HttpApplication httpApplication)
         {
-            // Only spin up the remoting channel if we are running on the same port as the settings
             var iisPort = int.Parse(httpApplication.Request.ServerVariables["SERVER_PORT"]);
             LoggerServer.Log("{0} - web.config WebHostPort: {1} running port: {2}", 
                 DeleporterConfiguration.WebHostPort == iisPort ? "Match" : "MisMatch", DeleporterConfiguration.WebHostPort, iisPort);

@@ -12,7 +12,7 @@ namespace DeleporterCore
 {
     public static class DeleporterUtilities
     {
-        public static int FindNextAvailablePort(int startingPort) {
+        public static int FindNextAvailableWebHostPort(int startingPort) {
             var portToTry = startingPort;
             var available = false;
 
@@ -80,6 +80,9 @@ namespace DeleporterCore
                 try {
                     wc.DownloadString(DeleporterConfiguration.SiteBaseUrl);
                 } catch (WebException webException) {
+                    if (webException.Response == null) {
+                        throw new InvalidOperationException("Failed to Prime Server. There was no response - if not SelfHosting, please make sure web application is running.");
+                    }
                     var responseStream = webException.Response.GetResponseStream();
                     var streamReader = new StreamReader(responseStream);
 
@@ -93,25 +96,27 @@ namespace DeleporterCore
         }
 
         public static void RecycleServerAppDomain() {
-            var currentAssemblyCodeBase = Assembly.GetExecutingAssembly().CodeBase;
-            var currentAssemblyDirectory = Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(currentAssemblyCodeBase).Path));
-
-            var testServerRootDirectory =
-                    Path.GetFullPath(Path.Combine(currentAssemblyDirectory, DeleporterConfiguration.RelativePathToWebApp));
-            var webConfigFileName = Path.Combine(testServerRootDirectory, "Web.config");
-
-            File.SetLastWriteTime(webConfigFileName, DateTime.Now);
+            DeleporterConfiguration.RecycleWebServerAppDomain();
         }
 
         /// <summary>
         ///   Depending on the test runner, it is possible that tests may be aborted without proper cleanup. Ports may be left unavailable for a while. Work around this by getting fresh ports if needed.
         /// </summary>
-        public static void SetWebAndRemotingPortsBasedOnAvailability() {
-            var webHostPort = FindNextAvailablePort(DeleporterConfiguration.WebHostPort);
-            var remotingPort = FindNextAvailableRemotingPort(DeleporterConfiguration.RemotingPort);
+        public static void IterateWebAndRemotingPortsIfNeeded() {
+            IterateRemotingPortIfNeeded();
+            IterateWebHostPortIfNeeded();
+        }
 
-            if (webHostPort != DeleporterConfiguration.WebHostPort || remotingPort != DeleporterConfiguration.RemotingPort) 
-                DeleporterConfiguration.UpdatePortsInWebConfig(webHostPort, remotingPort);
+        public static void IterateRemotingPortIfNeeded() {
+            var remotingPort = FindNextAvailableRemotingPort(DeleporterConfiguration.RemotingPort);
+            if (remotingPort != DeleporterConfiguration.RemotingPort)
+                DeleporterConfiguration.UpdateRemotingPortInWebConfig(remotingPort);
+        }
+
+        public static void IterateWebHostPortIfNeeded() {
+            var webHostPort = FindNextAvailableWebHostPort(DeleporterConfiguration.WebHostPort);
+            if (webHostPort != DeleporterConfiguration.WebHostPort)
+                DeleporterConfiguration.UpdateWebHostPortInWebConfig(webHostPort);
         }
 
         public static void WaitForLocalPortToBecomeAvailable(int port, int sleepTimeInMilliseconds = 100, int timesToCheck = 100) {

@@ -18,7 +18,7 @@ namespace DeleporterCore.SelfHosting.Servers
 
             LoggerClient.LoggingEnabled = DeleporterConfiguration.LoggingEnabled;
 
-            DeleporterUtilities.SetWebAndRemotingPortsBasedOnAvailability();
+            DeleporterUtilities.IterateWebAndRemotingPortsIfNeeded();
 
             if (!DeleporterUtilities.LocalPortIsAvailable(DeleporterConfiguration.WebHostPort)) {
                 LoggerClient.Log("ERROR: Cassini port {0} is being used. Attempt to start Cassini has been aborted",
